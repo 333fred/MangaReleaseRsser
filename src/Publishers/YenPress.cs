@@ -16,8 +16,6 @@ public class YenPress : IPublisher
 
         var releases = new List<MangaRelease>();
 
-        var today = DateOnly.FromDateTime(DateTime.Today);
-
         foreach (var bookLi in outThisMonth.SelectNodes("""li"""))
         {
             var bookLink = bookLi.SelectSingleNode("""div/div[@class="book-detail-links"]/a""").GetAttributeValue("href", null);
@@ -37,7 +35,7 @@ public class YenPress : IPublisher
             const string FullDetailsXpath = """//div[@id="book-details"]/ul""";
             var releaseDate = DateOnly.Parse(bookDoc.DocumentNode.SelectSingleNode($"""{FullDetailsXpath}/li[last()]/span[last()]""").InnerText);
 
-            if (releaseDate > today)
+            if (releaseDate == date)
             {
                 // Releases are alphabetically ordered, so we have to keep looking.
                 Console.WriteLine($"Skipping {title} because it is not for today");

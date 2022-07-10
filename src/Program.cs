@@ -1,5 +1,6 @@
 ﻿using System.ServiceModel.Syndication;
 using System.Xml;
+using System.Xml.Linq;
 
 if (args is not [string path])
 {
@@ -24,7 +25,9 @@ catch (FileNotFoundException)
 { }
 
 var publishers = new IPublisher[] {
-    new YenPress(),
+    //new YenPress(),
+    // TODO: They block scrapers
+    //new SevenSeas(),
 };
 
 var today = DateOnly.FromDateTime(DateTime.Today);
@@ -55,6 +58,8 @@ foreach (var publisher in publishers)
         break;
     }
 }
+
+Console.WriteLine("Finished all publishers");
 
 var items = allReleases.SelectMany(x => x.Value).OrderBy(x => x.ReleaseDate).Select(MangaRelease.ToSyndicationItem).ToList();
 var syndicationFeed = new SyndicationFeed(
@@ -89,7 +94,7 @@ public record MangaRelease(string Title, string Author, string Description, Date
                      Price: {release.Price}
                      """),
             ElementExtensions = {
-                { "thumbnail", "media", release.ImageUrl.ToString() }
+                new XElement(((XNamespace)"media") + "thumbnail", new XAttribute("url", release.ImageUrl))
             }
         };
 
