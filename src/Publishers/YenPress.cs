@@ -18,7 +18,7 @@ public class YenPress : IPublisher
 
         foreach (var bookLi in outThisMonth.SelectNodes("""li"""))
         {
-            var bookLink = bookLi.SelectSingleNode("""div/div[@class="book-detail-links"]/a""").GetAttributeValue("href", null);
+            var bookLink = bookLi.SelectSingleNode($"""div/div[{ClassContains("book-detail-links")}]/a""").GetAttributeValue("href", null);
             if (bookLink is null)
             {
                 Console.WriteLine($"Failed to retrieve book link for {bookLi}");

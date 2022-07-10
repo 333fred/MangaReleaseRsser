@@ -33,7 +33,7 @@ public class SevenSeas : IPublisher
             var releaseUrl = row.SelectSingleNode("""td[2]/a""").GetAttributeValue("href", null);
             var releaseDoc = await web.LoadFromWebAsync(releaseUrl);
 
-            var author = releaseDoc.DocumentNode.SelectSingleNode("""//span[class="creator"]/a""").InnerText;
+            var author = releaseDoc.DocumentNode.SelectSingleNode($"""//span[{ClassContains("creator")}]/a""").InnerText;
             var imageUrl = releaseDoc.DocumentNode.SelectSingleNode("""//*[@id="volume-cover"]/img""").GetAttributeValue("src", null);
 
             var allDetails = releaseDoc.DocumentNode

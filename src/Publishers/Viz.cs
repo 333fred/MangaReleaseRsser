@@ -27,7 +27,7 @@ public class Viz : IPublisher
 
             var releaseDoc = await web.LoadFromWebAsync(releaseUrl);
 
-            const string ReleaseDatePath = """//div[contains(concat(' ',normalize-space(@class),' '),' o_release-date ')]""";
+            var ReleaseDatePath = $"""//div[{ClassContains("o_release-date")}]""";
             var releaseDateString = releaseDoc.DocumentNode.SelectSingleNode(ReleaseDatePath).InnerText;
             releaseDateString = releaseDateString[(releaseDateString.IndexOf("Release ") + "Release ".Length)..];
             var releaseDate = DateOnly.Parse(releaseDateString);
@@ -48,7 +48,7 @@ public class Viz : IPublisher
 
             var price = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="buy-digital"]/div/table/tbody/tr[1]/td[2]""").InnerText.Trim();
             var author = releaseDoc.DocumentNode.SelectSingleNode(ReleaseDatePath).ParentNode.SelectSingleNode("div[1]").InnerText;
-            var image = releaseDoc.DocumentNode.SelectSingleNode("""//div[contains(concat(' ',normalize-space(@class),' '),' product-image ')]/img""").GetAttributeValue("src", null);
+            var image = releaseDoc.DocumentNode.SelectSingleNode($"""//div[{ClassContains("product-image")}]/img""").GetAttributeValue("src", null);
             var description = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="product_row"]/div[2]/div[1]/p""").InnerText;
 
             releases.Add(new(name, author, description, releaseDate, price, new Uri(releaseUrl), new Uri(image)));

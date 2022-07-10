@@ -1,4 +1,6 @@
-﻿using System.ServiceModel.Syndication;
+﻿global using static Util;
+
+using System.ServiceModel.Syndication;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -28,7 +30,8 @@ var publishers = new IPublisher[] {
     //new YenPress(),
     // TODO: They block scrapers
     //new SevenSeas(),
-    new Viz(),
+    //new Viz(),
+    new Kodansha(),
 };
 
 var today = DateOnly.FromDateTime(DateTime.Today);
