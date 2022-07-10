@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaReleaseRsser", "src\MangaReleaseRsser.csproj", "{EE2B130C-F963-4011-B111-97AC389B3538}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaReleaseRsser.Tests", "test\MangaReleaseRsser.Tests.csproj", "{EF743EEE-8D8D-495A-A9EF-F3AF1303785B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +18,5 @@ Global
 		{EE2B130C-F963-4011-B111-97AC389B3538}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE2B130C-F963-4011-B111-97AC389B3538}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE2B130C-F963-4011-B111-97AC389B3538}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EF743EEE-8D8D-495A-A9EF-F3AF1303785B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF743EEE-8D8D-495A-A9EF-F3AF1303785B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EF743EEE-8D8D-495A-A9EF-F3AF1303785B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EF743EEE-8D8D-495A-A9EF-F3AF1303785B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -18,7 +18,7 @@ public class Kodansha : IPublisher
         {
             var releaseDate = DateOnly.Parse(day.SelectSingleNode("h3").InnerText);
 
-            if (releaseDate <= date)
+            if (releaseDate == date)
             {
 
                 var mangaList = day.SelectNodes("""ol/li/div/div""");
@@ -35,16 +35,16 @@ public class Kodansha : IPublisher
                     var description = releaseDoc.DocumentNode.SelectSingleNode($"""//div[{ClassContains("product-detail-hero__synopsis")}]""").InnerText.Trim();
                     var image = releaseDoc.DocumentNode.SelectSingleNode($"""//div[{ClassContains("product-image")}]/img""").GetAttributeValue("src", null);
 
-                    releases.Add(new(name, author, description, releaseDate, "Unknown", new Uri(releaseUrl), new Uri(image)));
+                    releases.Add(new(name, author, description, Name, releaseDate, "Unknown", new Uri(releaseUrl), new Uri(image)));
                 }
 
                 break;
             }
-            // else if (releaseDate < date)
-            // {
-            //     // Skipping all previous days
-            //     continue;
-            // }
+            else if (releaseDate < date)
+            {
+                // Skipping all previous days
+                continue;
+            }
             else
             {
                 break;

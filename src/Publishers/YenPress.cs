@@ -35,7 +35,7 @@ public class YenPress : IPublisher
             const string FullDetailsXpath = """//div[@id="book-details"]/ul""";
             var releaseDate = DateOnly.Parse(bookDoc.DocumentNode.SelectSingleNode($"""{FullDetailsXpath}/li[last()]/span[last()]""").InnerText);
 
-            if (releaseDate == date)
+            if (releaseDate != date)
             {
                 // Releases are alphabetically ordered, so we have to keep looking.
                 Console.WriteLine($"Skipping {title} because it is not for today");
@@ -50,7 +50,7 @@ public class YenPress : IPublisher
             var price = bookDoc.DocumentNode.SelectSingleNode($"""{FullDetailsXpath}/span[last()]""").InnerText;
             price = price[(price.IndexOf(": ") + 2)..];
 
-            releases.Add(new(title, author, description, releaseDate, price, new Uri(bookLink), new Uri(imageUrl)));
+            releases.Add(new(title, author, description, Name, releaseDate, price, new Uri(bookLink), new Uri(imageUrl)));
         }
 
         return releases;

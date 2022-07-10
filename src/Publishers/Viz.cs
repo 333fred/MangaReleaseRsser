@@ -40,7 +40,7 @@ public class Viz : IPublisher
             }
             else if (releaseDate != date)
             {
-                Console.WriteLine("Skipping {name} because it is not for {date}");
+                Console.WriteLine($"Skipping {name} because it is not for {date}");
                 continue;
             }
 
@@ -51,7 +51,7 @@ public class Viz : IPublisher
             var image = releaseDoc.DocumentNode.SelectSingleNode($"""//div[{ClassContains("product-image")}]/img""").GetAttributeValue("src", null);
             var description = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="product_row"]/div[2]/div[1]/p""").InnerText;
 
-            releases.Add(new(name, author, description, releaseDate, price, new Uri(releaseUrl), new Uri(image)));
+            releases.Add(new(name, author, description, Name, releaseDate, price, new Uri(releaseUrl), new Uri(image)));
         }
 
         return releases;

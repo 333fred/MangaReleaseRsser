@@ -45,7 +45,7 @@ public class SevenSeas : IPublisher
             var price = allDetails[2][(allDetails[2].IndexOf(": ") + 2)..];
             var description = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="volume-meta"]/p[6]""").InnerText.Trim();
 
-            releases.Add(new(title, author, description, releaseDate, price, new Uri(releaseUrl), new Uri(imageUrl)));
+            releases.Add(new(title, author, description, Name, releaseDate, price, new Uri(releaseUrl), new Uri(imageUrl)));
         }
 
         return releases;

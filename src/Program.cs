@@ -27,11 +27,12 @@ catch (FileNotFoundException)
 { }
 
 var publishers = new IPublisher[] {
-    //new YenPress(),
+    new YenPress(),
     // TODO: They block scrapers
-    //new SevenSeas(),
-    //new Viz(),
+    // new SevenSeas(),
+    new Viz(),
     new Kodansha(),
+    new SquareEnix(),
 };
 
 var today = DateOnly.FromDateTime(DateTime.Today);
@@ -82,7 +83,7 @@ interface IPublisher
     string Name { get; }
 }
 
-public record MangaRelease(string Title, string Author, string Description, DateOnly ReleaseDate, string Price, Uri ReleaseUrl, Uri ImageUrl)
+public record MangaRelease(string Title, string Author, string Description, string Publisher, DateOnly ReleaseDate, string Price, Uri ReleaseUrl, Uri ImageUrl)
 {
     public static SyndicationItem ToSyndicationItem(MangaRelease release)
         => new(
@@ -94,6 +95,7 @@ public record MangaRelease(string Title, string Author, string Description, Date
                      Title: {release.Title}
                      Author: {release.Author}
                      Description: {release.Description.ReplaceLineEndings().Replace(Environment.NewLine, " ")}
+                     Publisher: {release.Publisher}
                      Release Date: {release.ReleaseDate:d}
                      Price: {release.Price}
                      """),
@@ -108,10 +110,11 @@ public record MangaRelease(string Title, string Author, string Description, Date
         var descriptionLines = item.Summary.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
         var author = descriptionLines[1]["Author: ".Length..].Trim();
         var description = descriptionLines[2]["Description: ".Length..].Trim();
-        var releaseDate = DateOnly.Parse(descriptionLines[3]["Release Date: ".Length..].Trim());
-        var price = descriptionLines[4]["Price: ".Length..].Trim();
+        var publisher = descriptionLines[3];
+        var releaseDate = DateOnly.Parse(descriptionLines[4]["Release Date: ".Length..].Trim());
+        var price = descriptionLines[5]["Price: ".Length..].Trim();
         var releaseUrl = item.BaseUri;
         var imageUrl = new Uri(item.ElementExtensions.FirstOrDefault(x => x.OuterName == "thumbnail")!.GetReader().GetAttribute("url")!);
-        return new MangaRelease(title, author, description, releaseDate, price, releaseUrl, imageUrl);
+        return new MangaRelease(title, author, description, publisher, releaseDate, price, releaseUrl, imageUrl);
     }
 }
