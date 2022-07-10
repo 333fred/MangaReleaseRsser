@@ -1,0 +1,6 @@
+[Unit]
+Description=Updates and publishes an RSS feed of serialized manga releases
+
+[Service]
+ExecStart=/usr/bin/dotnet run --project /opt/manga/MangaReleaseRsser/src /opt/manga/rss/rss.xml
+Type=oneshot
