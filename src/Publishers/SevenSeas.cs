@@ -43,7 +43,7 @@ public class SevenSeas : IPublisher
                 .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
             var price = allDetails[2][(allDetails[2].IndexOf(": ") + 2)..];
-            var description = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="volume-meta"]/p[6]""").InnerText.ReplaceLineEndings().Replace(Environment.NewLine, " ");
+            var description = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="volume-meta"]/p[6]""").InnerText.Trim();
 
             releases.Add(new(title, author, description, releaseDate, price, new Uri(releaseUrl), new Uri(imageUrl)));
         }

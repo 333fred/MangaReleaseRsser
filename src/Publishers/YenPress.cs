@@ -45,7 +45,7 @@ public class YenPress : IPublisher
             var author = bookDoc.DocumentNode.SelectSingleNode("""//h3[@id="book-author"]""").InnerText;
             // For some reason, HtmlAgilityPack is seeing the h3 tag as having the description div as its child node. It's not, but just work around it.
             author = author[..author.IndexOf('\n')];
-            var description = bookDoc.DocumentNode.SelectSingleNode("""//*[@id="book-description-full"]""").InnerText.ReplaceLineEndings().Replace(Environment.NewLine, " ");
+            var description = bookDoc.DocumentNode.SelectSingleNode("""//*[@id="book-description-full"]""").InnerText.Trim();
             var imageUrl = bookDoc.DocumentNode.SelectSingleNode("""//*[@id="main-cover"]/picture/img""").GetAttributeValue("src", null);
             var price = bookDoc.DocumentNode.SelectSingleNode($"""{FullDetailsXpath}/span[last()]""").InnerText;
             price = price[(price.IndexOf(": ") + 2)..];

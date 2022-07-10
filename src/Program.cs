@@ -28,6 +28,7 @@ var publishers = new IPublisher[] {
     //new YenPress(),
     // TODO: They block scrapers
     //new SevenSeas(),
+    new Viz(),
 };
 
 var today = DateOnly.FromDateTime(DateTime.Today);
@@ -89,7 +90,7 @@ public record MangaRelease(string Title, string Author, string Description, Date
             Summary = new TextSyndicationContent($"""
                      Title: {release.Title}
                      Author: {release.Author}
-                     Description: {release.Description}
+                     Description: {release.Description.ReplaceLineEndings().Replace(Environment.NewLine, " ")}
                      Release Date: {release.ReleaseDate:d}
                      Price: {release.Price}
                      """),
