@@ -70,7 +70,7 @@ foreach (var publisher in publishers)
     {
         Console.WriteLine($"Encountered error with {publisher.Name}:\n {ex.Message}");
         allReleases.Add(publisher.Name, new() {
-            new("Error", "Error", ex.Message, publisher.Name, today, "Error", new Uri("Error"), new Uri("Error"))
+            new("Error", "Error", ex.Message, publisher.Name, today, "Error", null, null)
         });
     }
 }
@@ -94,7 +94,7 @@ interface IPublisher
     string Name { get; }
 }
 
-public record MangaRelease(string Title, string Author, string Description, string Publisher, DateOnly ReleaseDate, string Price, Uri ReleaseUrl, Uri ImageUrl)
+public record MangaRelease(string Title, string Author, string Description, string Publisher, DateOnly ReleaseDate, string Price, Uri? ReleaseUrl, Uri? ImageUrl)
 {
     public static SyndicationItem ToSyndicationItem(MangaRelease release)
         => new(
@@ -111,7 +111,7 @@ public record MangaRelease(string Title, string Author, string Description, stri
                      Price: {release.Price}
                      """),
             ElementExtensions = {
-                new XElement(((XNamespace)"media") + "thumbnail", new XAttribute("url", release.ImageUrl))
+                new XElement(((XNamespace)"media") + "thumbnail", new XAttribute("url", release.ImageUrl?.ToString() ?? ""))
             }
         };
 
@@ -125,7 +125,12 @@ public record MangaRelease(string Title, string Author, string Description, stri
         var releaseDate = DateOnly.Parse(descriptionLines[4]["Release Date: ".Length..].Trim());
         var price = descriptionLines[5]["Price: ".Length..].Trim();
         var releaseUrl = item.BaseUri;
-        var imageUrl = new Uri(item.ElementExtensions.FirstOrDefault(x => x.OuterName == "thumbnail")!.GetReader().GetAttribute("url")!);
+        var imageUrl = item.ElementExtensions
+            .FirstOrDefault(x => x.OuterName == "thumbnail")?
+            .GetReader()
+            .GetAttribute("url") is not (null or "") and var url
+                ? new Uri(url)
+                : null;
         return new MangaRelease(title, author, description, publisher, releaseDate, price, releaseUrl, imageUrl);
     }
 }
