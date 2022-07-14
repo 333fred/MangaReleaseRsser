@@ -4,7 +4,7 @@ using System.ServiceModel.Syndication;
 using System.Xml;
 using System.Xml.Linq;
 
-if (args is not [string path])
+if (args is not [string path, ..])
 {
     throw new Exception("Must provide a path to the RSS file.");
 }
@@ -35,32 +35,43 @@ var publishers = new IPublisher[] {
     new SquareEnix(),
 };
 
-var today = DateOnly.FromDateTime(DateTime.Today);
+var today = args.Length == 2 ? DateOnly.Parse(args[1]) : DateOnly.FromDateTime(DateTime.Today);
 var thirtyDaysAgo = today.AddDays(-30);
 
 foreach (var publisher in publishers)
 {
     Console.WriteLine($"Processing {publisher.Name}");
 
-    var releases = await publisher.GetReleasesForDate(today);
-    if (allReleases.TryGetValue(publisher.Name, out var existingReleases))
+    try
     {
-        allReleases[publisher.Name].AddRange(releases);
-    }
-    else
-    {
-        allReleases.Add(publisher.Name, releases);
-    }
 
-    for (int i = 0; i < releases.Count; i++)
-    {
-        if (releases[i].ReleaseDate < thirtyDaysAgo)
+        var releases = await publisher.GetReleasesForDate(today);
+        if (allReleases.TryGetValue(publisher.Name, out var existingReleases))
         {
-            releases.RemoveAt(i);
-            i--;
-            continue;
+            allReleases[publisher.Name].AddRange(releases);
         }
-        break;
+        else
+        {
+            allReleases.Add(publisher.Name, releases);
+        }
+
+        for (int i = 0; i < releases.Count; i++)
+        {
+            if (releases[i].ReleaseDate < thirtyDaysAgo)
+            {
+                releases.RemoveAt(i);
+                i--;
+                continue;
+            }
+            break;
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Encountered error with {publisher.Name}:\n {ex.Message}");
+        allReleases.Add(publisher.Name, new() {
+            new("Error", "Error", ex.Message, publisher.Name, today, "Error", new Uri("Error"), new Uri("Error"))
+        });
     }
 }
 
