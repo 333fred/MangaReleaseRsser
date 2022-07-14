@@ -2,7 +2,7 @@
 Description=Run the rss feed updater every morning
 
 [Timer]
-OnCalendar=OnCalendar=*-*-* 2:30:00
+OnCalendar=*-*-* 2:30:00
 
 [Install]
 WantedBy=timers.target

@@ -46,7 +46,11 @@ public class Viz : IPublisher
 
             Console.WriteLine($"Processing title {name}");
 
-            var price = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="buy-digital"]/div/table/tbody/tr[1]/td[2]""").InnerText.Trim();
+            var priceTab = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="buy-digital"]""")
+                           ?? releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="buy-hardcover"]""")
+                           ?? releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="buy-paperback"]""");
+
+            var price = priceTab.SelectSingleNode("""div/table/tbody/tr[1]/td[2]""").InnerText.Trim();
             var author = releaseDoc.DocumentNode.SelectSingleNode(ReleaseDatePath).ParentNode.SelectSingleNode("div[1]").InnerText;
             var image = releaseDoc.DocumentNode.SelectSingleNode($"""//div[{ClassContains("product-image")}]/img""").GetAttributeValue("src", null);
             var description = releaseDoc.DocumentNode.SelectSingleNode("""//div[@id="product_row"]/div[2]/div[1]/p""").InnerText;
