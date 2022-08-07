@@ -11,21 +11,6 @@ if (args is not [string path, ..])
 
 var allReleases = new Dictionary<string, List<MangaRelease>>();
 
-try
-{
-    using var xmlReader = XmlReader.Create(path);
-    var feed = SyndicationFeed.Load(xmlReader);
-
-    var groupedItems = feed.Items.Select(MangaRelease.ToMangaRelease).GroupBy(x => x.Title);
-
-    foreach (var group in groupedItems)
-    {
-        allReleases.Add(group.Key, group.ToList());
-    }
-}
-catch (FileNotFoundException)
-{ }
-
 var publishers = new IPublisher[] {
     new YenPress(),
     // TODO: They block scrapers
@@ -46,14 +31,7 @@ foreach (var publisher in publishers)
     {
 
         var releases = await publisher.GetReleasesForDate(today);
-        if (allReleases.TryGetValue(publisher.Name, out var existingReleases))
-        {
-            allReleases[publisher.Name].AddRange(releases);
-        }
-        else
-        {
-            allReleases.Add(publisher.Name, releases);
-        }
+        allReleases.Add(publisher.Name, releases);
 
         for (int i = 0; i < releases.Count; i++)
         {
@@ -76,6 +54,12 @@ foreach (var publisher in publishers)
 }
 
 Console.WriteLine("Finished all publishers");
+
+if (allReleases.Count == 0)
+{
+    Console.WriteLine("No releases found.");
+    return;
+}
 
 var items = allReleases.SelectMany(x => x.Value).OrderBy(x => x.ReleaseDate).Select(MangaRelease.ToSyndicationItem).ToList();
 var syndicationFeed = new SyndicationFeed(
@@ -102,6 +86,8 @@ public record MangaRelease(string Title, string Author, string Description, stri
             content: "",
             itemAlternateLink: release.ReleaseUrl)
         {
+            Id = release.ReleaseUrl?.ToString() ?? Guid.NewGuid().ToString(),
+            PublishDate = DateTimeOffset.Now,
             Summary = new TextSyndicationContent($"""
                      Title: {release.Title}
                      Author: {release.Author}
@@ -114,23 +100,4 @@ public record MangaRelease(string Title, string Author, string Description, stri
                 new XElement(((XNamespace)"media") + "thumbnail", new XAttribute("url", release.ImageUrl?.ToString() ?? ""))
             }
         };
-
-    public static MangaRelease ToMangaRelease(SyndicationItem item)
-    {
-        var title = item.Title.Text;
-        var descriptionLines = item.Summary.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-        var author = descriptionLines[1]["Author: ".Length..].Trim();
-        var description = descriptionLines[2]["Description: ".Length..].Trim();
-        var publisher = descriptionLines[3];
-        var releaseDate = DateOnly.Parse(descriptionLines[4]["Release Date: ".Length..].Trim());
-        var price = descriptionLines[5]["Price: ".Length..].Trim();
-        var releaseUrl = item.BaseUri;
-        var imageUrl = item.ElementExtensions
-            .FirstOrDefault(x => x.OuterName == "thumbnail")?
-            .GetReader()
-            .GetAttribute("url") is not (null or "") and var url
-                ? new Uri(url)
-                : null;
-        return new MangaRelease(title, author, description, publisher, releaseDate, price, releaseUrl, imageUrl);
-    }
 }
