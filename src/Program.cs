@@ -17,11 +17,11 @@ var publishers = new IPublisher[] {
     // new SevenSeas(),
     new Viz(),
     new Kodansha(),
-    new SquareEnix(),
+    // TODO: They block scrapers
+    // new SquareEnix(),
 };
 
 var today = args.Length == 2 ? DateOnly.Parse(args[1]) : DateOnly.FromDateTime(DateTime.Today);
-var thirtyDaysAgo = today.AddDays(-30);
 
 foreach (var publisher in publishers)
 {
@@ -32,17 +32,6 @@ foreach (var publisher in publishers)
 
         var releases = await publisher.GetReleasesForDate(today);
         allReleases.Add(publisher.Name, releases);
-
-        for (int i = 0; i < releases.Count; i++)
-        {
-            if (releases[i].ReleaseDate < thirtyDaysAgo)
-            {
-                releases.RemoveAt(i);
-                i--;
-                continue;
-            }
-            break;
-        }
     }
     catch (Exception ex)
     {
