@@ -1,4 +1,5 @@
 using HtmlAgilityPack;
+using OpenQA.Selenium;
 
 public class Viz : IPublisher
 {
@@ -7,7 +8,7 @@ public class Viz : IPublisher
     private const string VizBaseUrl = "https://www.viz.com";
     private const string VizReleaseBaseUrl = $"{VizBaseUrl}/calendar/";
 
-    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date)
+    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date, WebDriver driver)
     {
         var releaseCalendarUrl = $"{VizReleaseBaseUrl}{date.Year}/{date.Month}";
 

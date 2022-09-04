@@ -1,4 +1,5 @@
 using HtmlAgilityPack;
+using OpenQA.Selenium;
 
 public class Kodansha : IPublisher
 {
@@ -6,7 +7,7 @@ public class Kodansha : IPublisher
 
     public const string KodanshaReleaseUrl = "https://kodansha.us/manga/calendar/";
 
-    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date)
+    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date, WebDriver driver)
     {
         var web = new HtmlWeb();
         var doc = await web.LoadFromWebAsync(KodanshaReleaseUrl);

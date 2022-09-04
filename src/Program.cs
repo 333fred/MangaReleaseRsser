@@ -3,11 +3,31 @@
 using System.ServiceModel.Syndication;
 using System.Xml;
 using System.Xml.Linq;
+using Docker.DotNet;
+using Docker.DotNet.Models;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Remote;
 
 if (args is not [string path, ..])
 {
     throw new Exception("Must provide a path to the RSS file.");
 }
+
+var dockerClient = new DockerClientConfiguration().CreateClient();
+await dockerClient.Containers.StartContainerAsync("chromedriver", new ContainerStartParameters());
+
+// Let the container start up
+await Task.Delay(TimeSpan.FromSeconds(15));
+
+Console.WriteLine("Container started");
+
+var chromeOptions = new ChromeOptions();
+chromeOptions.AddArgument("--enable-javascript");
+var driver = new RemoteWebDriver(new Uri("http://localhost:4444/wd/hub"), chromeOptions.ToCapabilities());
+driver.Manage().Window.FullScreen();
+
+Console.WriteLine("Driver started");
 
 var allReleases = new Dictionary<string, List<MangaRelease>>();
 
@@ -17,8 +37,7 @@ var publishers = new IPublisher[] {
     // new SevenSeas(),
     new Viz(),
     new Kodansha(),
-    // TODO: They block scrapers
-    // new SquareEnix(),
+    new SquareEnix(),
 };
 
 var today = args.Length == 2 ? DateOnly.Parse(args[1]) : DateOnly.FromDateTime(DateTime.Today);
@@ -29,8 +48,7 @@ foreach (var publisher in publishers)
 
     try
     {
-
-        var releases = await publisher.GetReleasesForDate(today);
+        var releases = await publisher.GetReleasesForDate(today, driver);
         allReleases.Add(publisher.Name, releases);
     }
     catch (Exception ex)
@@ -41,6 +59,8 @@ foreach (var publisher in publishers)
         });
     }
 }
+
+await dockerClient.Containers.StopContainerAsync("chromedriver", new ContainerStopParameters());
 
 Console.WriteLine("Finished all publishers");
 
@@ -63,7 +83,7 @@ rssFormatter.WriteTo(writer);
 
 interface IPublisher
 {
-    Task<List<MangaRelease>> GetReleasesForDate(DateOnly date);
+    Task<List<MangaRelease>> GetReleasesForDate(DateOnly date, WebDriver driver);
     string Name { get; }
 }
 

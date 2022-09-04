@@ -1,4 +1,5 @@
 using HtmlAgilityPack;
+using OpenQA.Selenium;
 
 public class YenPress : IPublisher
 {
@@ -7,7 +8,7 @@ public class YenPress : IPublisher
     private const string YenPressBaseUrl = "https://yenpress.com";
     private const string DigitalReleaseLink = $"{YenPressBaseUrl}/digital/";
 
-    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date)
+    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date, WebDriver driver)
     {
         var web = new HtmlWeb();
         var doc = await web.LoadFromWebAsync(DigitalReleaseLink);

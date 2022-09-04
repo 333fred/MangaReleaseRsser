@@ -1,5 +1,6 @@
 using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
+using OpenQA.Selenium;
 
 public class SquareEnix : IPublisher
 {
@@ -8,14 +9,10 @@ public class SquareEnix : IPublisher
     private const string SquareEnixBaseUrl = "https://squareenixmangaandbooks.square-enix-games.com";
     private const string SquareEnixJsonUrl = $"{SquareEnixBaseUrl}/locale/en-us";
 
-    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date)
+    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date, WebDriver driver)
     {
-        var jsonText = "";
-        using (var client = new HttpClient())
-        {
-            var response = await client.GetAsync("https://squareenixmangaandbooks.square-enix-games.com/locale/en-us");
-            jsonText = await response.Content.ReadAsStringAsync();
-        }
+        driver.Navigate().GoToUrl("https://squareenixmangaandbooks.square-enix-games.com/locale/en-us");
+        var jsonText = driver.FindElement(By.TagName("pre")).Text;
 
         var json = JObject.Parse(jsonText);
         var releases = new List<MangaRelease>();

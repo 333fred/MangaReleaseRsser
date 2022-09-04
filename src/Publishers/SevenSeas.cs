@@ -1,4 +1,5 @@
 using HtmlAgilityPack;
+using OpenQA.Selenium;
 
 public class SevenSeas : IPublisher
 {
@@ -6,10 +7,17 @@ public class SevenSeas : IPublisher
 
     private const string SevenSeasReleaseUrl = "https://sevenseasentertainment.com/release-dates/";
 
-    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date)
+    public async Task<List<MangaRelease>> GetReleasesForDate(DateOnly date, WebDriver driver)
     {
+        String userAgent = (string)((IJavaScriptExecutor)driver).ExecuteScript("return navigator.userAgent;");
         var web = new HtmlWeb();
-        var doc = await web.LoadFromWebAsync(SevenSeasReleaseUrl);
+        driver.SetUserVerified(true);
+        driver.Navigate().GoToUrl(SevenSeasReleaseUrl);
+
+        await Task.Delay(TimeSpan.FromSeconds(30));
+
+        var doc = new HtmlDocument();
+        doc.LoadHtml(driver.PageSource);
 
         var releasesTable = doc.DocumentNode.SelectSingleNode("""//table[@id="releasedates"]/tbody""");
 
